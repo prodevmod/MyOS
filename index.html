@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="script.js" defer></script>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+    <title>Warrior OS</title>
+</head>
+<body style="font-family: Helvetica, fantasy; background-color: #0a0a0a; background-size: cover; background-image:url(./Med.png); padding: 20px; text-align: center;">
+
+    <div id="welcome" class="window" style="top: 50%; left: 50%; width: 400px;">
+        <div class="windowheader" id="welcomeheader">
+          <div class="closebutton" id="welcomeclose">X</div>
+          <p class="headertext">Hail, and well met!</p>
+          <div style="width: 20px;"></div>
+        </div>
+        <div style="background-color: #1a1a1a; margin: 6px 6px 6px 6px; border-radius: 12px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; border: 1px solid #333;">
+          <h1 style="margin: 0; color: #ffffff; font-size: 28px;">Warrior OS</h1>
+          <img style="width: 200px; height: 100px; border-radius: 15px; display: block; margin: 0 auto;" src="https://i.pinimg.com/originals/38/a5/aa/38a5aaf62f204a5c5413fe49a1521054.gif" alt="Warrior Animation" />
+          <p style="color: #e0e0e0; font-size: 14px; line-height: 1.4; margin: 0;">This is an OS I am making in my mission to familiarise myself with coding and apply my skills. It will be warrior themed as I LOVE medieval warriors!</p>
+        </div>
+    </div>
+
+    <div id="sidequesttracker" class="window" style="top: calc(50% - 240px); left: calc(50% - 300px); width: 800px; display: none;">
+        <div class="windowheader" id="sidequesttrackerheader">
+          <div class="closebutton" id="sidequesttrackerclose">X</div>
+          <p class="headertext">Quest Archive</p>
+          <div style="width: 20px;"></div>
+        </div>
+        <div style="background-color: #1a1a1a; margin: 6px; border-radius: 12px; padding: 16px; box-sizing: border-box; display: flex; flex-direction: row; gap: 16px; height: 400px; border: 1px solid #333;">
+          
+          <!-- Sidebar Navigation -->
+          <div style="background-color: #0f0f0f; padding: 12px; border-radius: 12px; width: 120px; display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; border: 1px solid #333;">
+            <div class="sidebar-item active" data-content="logs" style="padding: 12px; border-radius: 8px; cursor: pointer; background-color: #cc0000; color: #fff; font-weight: 700; text-align: center;">
+              Logs
+            </div>
+            <div class="sidebar-item" data-content="quests" style="padding: 12px; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: 700; text-align: center; background-color: #2a2a2a;">
+              Quests
+            </div>
+          </div>
+
+          <!-- Content Area -->
+          <div style="flex: 1; display: flex; gap: 16px; overflow: hidden;">
+            
+            <!-- Logs Section -->
+            <div id="logs-content" class="content-section" style="display: flex; gap: 16px; overflow: hidden; flex: 1;">
+              
+              <!-- List Section -->
+              <div style="width: 200px; background-color: #0f0f0f; border-radius: 12px; padding: 12px; overflow-y: auto; border: 1px solid #333;">
+                <div id="logs-list"></div>
+              </div>
+
+              <!-- Detail Section -->
+              <div style="flex: 1; background-color: #0f0f0f; border-radius: 12px; padding: 16px; overflow-y: auto; color: #e0e0e0; border: 1px solid #333;">
+                <div id="logs-detail"></div>
+              </div>
+
+            </div>
+
+            <!-- Quests Section -->
+            <div id="quests-content" class="content-section" style="display: none; gap: 16px; overflow: hidden; flex: 1;">
+              
+              <!-- List Section -->
+              <div style="width: 200px; background-color: #0f0f0f; border-radius: 12px; padding: 12px; overflow-y: auto; border: 1px solid #333;">
+                <div id="quests-list"></div>
+              </div>
+
+              <!-- Detail Section -->
+              <div style="flex: 1; background-color: #0f0f0f; border-radius: 12px; padding: 16px; overflow-y: auto; color: #e0e0e0; border: 1px solid #333;">
+                <div id="quests-detail"></div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+    </div>
+
+    <div id="top" style="position: absolute;top: 0%; left: 0%; width: 100%; display: flex; backdrop-filter: blur(10px); background-color: rgba(0, 0, 0, 0.8); color: #fff; justify-content: space-between; gap: 32px; z-index: 1000; border-bottom: 2px solid #cc0000;">
+        <p style="margin-left: 16px; font-weight: 700; background-color: rgba(204, 0, 0, 0.2); padding: 4px 12px; border-radius: 16px;cursor: pointer; color: #ccc;" id="welcomeopen">
+            WarriorOS
+        </p>
+        <p style="margin-left: 16px; font-weight: 700; background-color: rgba(204, 0, 0, 0.2); padding: 4px 12px; border-radius: 16px; color: #ccc;">
+            Mens et Manus
+        </p>
+        <p id="timeElement" style="margin-right: 16px; background-color: rgba(204, 0, 0, 0.2); padding: 4px 12px; border-radius: 16px; color: #ccc;">
+        </p>
+    </div>
+
+    <div id="desktopApps" style="padding-top: 64px;">
+        <div id="sidequesticon" class="desktop-icon" data-app="sidequesttracker" style="text-align: center; padding: 16px; filter: drop-shadow(0 0 8px black); width: fit-content;">
+          <img src="./pixil-frame-0.png" style="width: 64px; height: 64px; border-radius: 16px;">
+          <p style="margin: 0px; color: #fff;">Quest Archive</p>
+        </div>
+    </div>
+
+    <div id="desktopApps" style="padding-top: 64px;">
+        <div id="aboutmeicon" class="desktop-icon" data-app="aboutme" style="text-align: center; padding: 16px; filter: drop-shadow(0 0 8px black); width: fit-content;">
+          <img src="./pixil-frame-0 (2).png" style="width: 64px; height: 64px; border-radius: 16px;">
+          <p style="margin: 0px; color: #fff;">About Me</p>
+        </div>
+    </div>
+
+      <div id="aboutme" class="window" style="top: 50%; left: 20%; width: 400px;">
+        <div class="windowheader" id="aboutmeheader">
+          <div class="closebutton" id="aboutmeclose">X</div>
+          <p class="headertext">About Me!</p>
+          <div style="width: 20px;"></div>
+        </div>
+        <div style="background-color: #1a1a1a; margin: 6px 6px 6px 6px; border-radius: 12px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; border: 1px solid #333;">
+          <h1 style="margin: 0; color: #ffffff; font-size: 28px;">About Me</h1>
+          <img style="width: 200px; height: 100px; border-radius: 15px; display: block; margin: 0 auto;" src="./pixil-frame-0 (4).png" alt="About Me" />
+                      <div class="abbar-item active" data-content="summary" style="padding: 12px; border-radius: 8px; cursor: pointer; background-color: #cc0000; color: #fff; font-weight: 700; text-align: center;">
+              A summary of me
+            </div>
+            <div class="abbar-item" data-content="Contacts" style="padding: 12px; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: 700; text-align: center; background-color: #2a2a2a;">
+              Contacts
+            </div>
+            <div class="abbar-item" data-content="Portfolio" style="padding: 12px; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: 700; text-align: center; background-color: #2a2a2a;">
+              Portfolio
+            </div>
+        </div>
+        <div style="width: fill-parent; background-color: #0f0f0f; border-radius: 12px; padding: 12px; overflow-y: auto; border: 1px solid #333;">
+                <div id="list"></div>
+        </div>
+        <div id="summary-content" class="abcontent-section" style="display: block; color: #e0e0e0;">
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">Who am I?</p>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">My name is Rosario Alexandros Morabito and I am a metalhead.</p>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">What do I know?</p>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">I have all the basic and advance knowledge of python and C++.I know how to CAD, make schematics and create awesome robots!</p>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">Current Quest</p>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">Throught this site I hope to learn basic java and html.(I learn mostly through failures and projects!) </p>
+    </div>
+</div>
+
+<div id="Contacts-content" class="abcontent-section" style="display: none; color: #e0e0e0;">
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0.5; color: #ffffff; font-weight: 700; font-size: 14px;">Send a Raven </p>
+        <a href="mailto:rosandrox12@gmail.com">EMAIL</a>
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">rosandrox12@gmail.com </p>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">Projects</p>
+        <a href="https://github.com/prodevmod">Github</a>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">The Creator Page I</p>
+       <a href="https://www.youtube.com/@CodingTode">Youtube</a>
+    </div>
+        <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">The Creator Page II</p>
+       <a href="https://www.instagram.com/code.toons/">Instagram</a>
+    </div>
+</div>
+
+<div id="Portfolio-content" class="abcontent-section" style="display: none; color: #e0e0e0;">
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffd700; font-weight: 700; font-size: 14px;">Artifact I: Warrior OS</p>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">A custom medieval-themed operating system interface built from scratch.</p>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffd700; font-weight: 700; font-size: 14px;">Artifact II: Dr.-Serve-Rus
+</p>
+<img style="width: 200px; height: 100px; border-radius: 15px;" src="https://private-user-images.githubusercontent.com/197580568/610796072-9fe96da9-338c-495a-8e4f-d926ced07f44.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODIyNTE4NzAsIm5iZiI6MTc4MjI1MTU3MCwicGF0aCI6Ii8xOTc1ODA1NjgvNjEwNzk2MDcyLTlmZTk2ZGE5LTMzOGMtNDk1YS04ZTRmLWQ5MjZjZWQwN2Y0NC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNjIzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDYyM1QyMTUyNTBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0xZDRkYTY5MWI0MjY5OGVkY2QyYWZjNTU0ZTYwYjkyYjVjMDJjNzU1YWJlYWE2NGYyZWIxNzY1MzE0NDBlN2RmJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.JrASJSgjZQr6dU05dLG8JEPbRZoENgzIKpqhMRW0i6Q"/>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">A voice-controlled robotic surgical assistance system designed to support, not replace, human surgical assistants in operating rooms and emergency medical environments.</p>
+    </div>
+    <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffd700; font-weight: 700; font-size: 14px;">Artifact III: TalentCruiter</p>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">A Slack native app that is designed for recruiters and people who try to network between them and find individuals with certain skills to be able to communicate better and link up quicker than using dozens of apps like LinkedIn, WhatsApp Messenger, and while also being in their the electronic workplace</p>
+    </div>
+        <div style="padding: 12px; border-radius: 8px; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;">
+        <p style="margin: 0; color: #ffd700; font-weight: 700; font-size: 14px;">Artifact IV: GripSync</p>
+        <img style="width: 200px; height: 100px; border-radius: 15px;" src="https://private-user-images.githubusercontent.com/197580568/612109600-efb20d28-67fd-4070-ac97-d8b15d365166.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODIyNTI1NDYsIm5iZiI6MTc4MjI1MjI0NiwicGF0aCI6Ii8xOTc1ODA1NjgvNjEyMTA5NjAwLWVmYjIwZDI4LTY3ZmQtNDA3MC1hYzk3LWQ4YjE1ZDM2NTE2Ni5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNjIzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDYyM1QyMjA0MDZaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04M2E2ZDkxZDc0ZDExNTNhYWJmZTFiOWE1ODYxZDk0YzQyNmRiZjMzMzc4NDUwNzhiMjUwM2RhYWVkNDYwNjk3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.wZrB3JU9SUR5b8k_s_JUrhLYdLfM8xi13M4HcEg69tI"/>
+        <p style="font-size: 13px; margin: 4px 0 0 0; color: #ccc;">A vehicle controlled by a specialized glove, converting hand gestures into driving commands. Our project integrates robotics, sensor technology, and wireless control, demonstrating how persistence and teamwork can transform failure into success.</p>
+    </div>
+</div>
+    </div>
+
+</body>
+</html>
