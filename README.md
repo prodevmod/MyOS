@@ -18,4 +18,29 @@ In the top bar, as traded previously, there is the WarriorOS UI button that you 
 ## Pomodoro Timer
 I also added the pomodoro timer. 
 
+## Coffee Minder
+ it's an app that reminds you to drink coffee. I saw a water tracker back in the time that was a little bit funnier and goofier than the usual ones. I tried to recreate it but with coffee. At 45 minutes the gargoyle gets tired. And in one hour it falls asleep or dies and you have to drink coffee to revive it by pushing a button. I have called the coffee black elixir inside the app to make it a bit more medieval like.
 
+ ## Music Player
+ I found the YouTube guide in regards to how to make it but it was still a challenging process because I had to modify it. It currently plays only one song.
+
+ ## Calendar
+ it is just a calendar.
+
+ ### Basically the whole OS
+ * Quest archive: descriptions of imaginary quests and monsters
+ * About me: information about me and my journey through coding and robotics.
+ * Pomodoro Timer: a focus timer
+ * Coffee Minder: an app that reminds you to drink coffee every 45 minutes with one hour
+ * Music player: place one medieval folk music anthem.
+ * WarriorOS top bar button: opens the welcome window for WarriorOS
+ * The date in the top bar: opens up the calendar
+ * A clock in the middle of the screen
+ 
+
+## Credits
+Huge thanks to: 
+https://pixabay.com/users/tunetank-50201703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=412748
+ and
+ https://www.youtube.com/watch?v=JtrFzoL1joI
+ for making this site easier to make!!
