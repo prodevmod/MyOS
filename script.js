@@ -69,57 +69,130 @@ var logContent = {
   ]
 };
 
-//Time Tracking Function
+// Global tracking variable to prevent unnecessary screen re-renders
+var currentMonthTracked = -1;
+
+// --- VISUAL CALENDAR ENGINE ---
+function drawCalendarGrid(year, month, todayDate) {
+  var gridContainer = document.querySelector("#calendarGridContainer");
+  if (!gridContainer) return;
+
+  // Clear any existing content inside the frame
+  gridContainer.innerHTML = "";
+
+  // 1. Create a modern CSS Grid element
+  var gridWrapper = document.createElement("div");
+  gridWrapper.style.display = "grid";
+  gridWrapper.style.gridTemplateColumns = "repeat(7, 1fr)";
+  gridWrapper.style.gap = "8px";
+  gridWrapper.style.marginTop = "12px";
+
+  // 2. Inject Day Headers (Sunday through Saturday)
+  var dayLabels = ["S", "M", "T", "W", "T", "F", "S"];
+  dayLabels.forEach(function(dayName) {
+    var label = document.createElement("div");
+    label.innerText = dayName;
+    label.style.color = "#555"; // Subtle dim color for header text
+    label.style.fontWeight = "bold";
+    label.style.textAlign = "center";
+    label.style.fontSize = "11px";
+    gridWrapper.appendChild(label);
+  });
+
+  // 3. Calculate calendar grid specifications
+  var totalDays = new Date(year, month + 1, 0).getDate();
+  var startingDay = new Date(year, month, 1).getDay();
+
+  // 4. Inject empty structural spaces for off-month padding blocks
+  for (var i = 0; i < startingDay; i++) {
+    var emptyCell = document.createElement("div");
+    gridWrapper.appendChild(emptyCell);
+  }
+
+  // 5. Generate and stamp out actual calendar day buttons
+  for (var day = 1; day <= totalDays; day++) {
+    var dayCell = document.createElement("div");
+    dayCell.innerText = day;
+    dayCell.style.textAlign = "center";
+    dayCell.style.padding = "6px 0";
+    dayCell.style.fontSize = "13px";
+    dayCell.style.color = "#b3b3b3";
+    dayCell.style.borderRadius = "6px";
+    dayCell.style.fontFamily = "monospace";
+
+    // Highlight your target current active day matching real-world clocks
+    if (day === todayDate) {
+      dayCell.style.backgroundColor = "#ff3b30"; // Clean warrior crimson accent tag
+      dayCell.style.color = "#ffffff";
+      dayCell.style.fontWeight = "bold";
+      dayCell.style.boxShadow = "0 0 8px rgba(255, 59, 48, 0.4)";
+    }
+
+    gridWrapper.appendChild(dayCell);
+  }
+
+  // Mount the newly rendered engine block directly onto your app frame
+  gridContainer.appendChild(gridWrapper);
+}
+
+// --- SYSTEM TIME TRACKING ENGINE ---
 setInterval(function () {
-  document.querySelector("#timeElement").innerHTML = new Date().toLocaleString();
+  var now = new Date();
+  
+  // Grab standard UI nodes
+  var topBarCalendar = document.querySelector("#calendarOpen");
+  var windowCalendar = document.querySelector("#calendarContent");
+  var mainClock = document.querySelector("#clockElement");
+
+  // Keep live time and string fields firing every second smoothly
+  if (topBarCalendar) topBarCalendar.innerHTML = now.toLocaleDateString();
+  if (windowCalendar) windowCalendar.innerHTML = now.toDateString();
+  if (mainClock) mainClock.innerHTML = now.toLocaleTimeString();
+
+  var currentYear = now.getFullYear();
+  var currentMonth = now.getMonth();
+  var todayDate = now.getDate();
+
+  // GATEWAY GATEKEEPER: Only rebuild the layout if it hasn't been built yet, or if the month changes.
+  if (currentMonth !== currentMonthTracked) {
+    currentMonthTracked = currentMonth;
+    drawCalendarGrid(currentYear, currentMonth, todayDate);
+  }
 }, 1000);
 
-// Define a function called `dragElement` that makes an HTML element draggable.
+// --- WINDOW DRAGGING ENGINE ---
 function dragElement(element) {
   if (!element) return;
   
-  // Set up variables to keep track of the element's position.
-  var initialX = 0;
-  var initialY = 0;
-  var currentX = 0;
-  var currentY = 0;
+  var initialX = 0, initialY = 0, currentX = 0, currentY = 0;
 
-  // Check if there is a special header element associated with the draggable element.
   var headerElement = document.getElementById(element.id + "header");
   if (headerElement) {
-    // If present, assign the `dragMouseDown` function to the header's `onmousedown` event.
     headerElement.onmousedown = startDragging;
   } else {
-    // If not present, assign the function directly to the draggable element's `onmousedown` event.
     element.onmousedown = startDragging;
   }
 
-  // Define the `startDragging` function to capture the initial mouse position and set up event listeners.
   function startDragging(e) {
     e = e || window.event;
     e.preventDefault();
-    // Get the mouse cursor position at startup.
     initialX = e.clientX;
     initialY = e.clientY;
-    // Set up event listeners for mouse movement and mouse button release.
     document.onmouseup = stopDragging;
     document.onmousemove = dragMove;
   }
 
-  // Define the `dragMove` function to calculate the new position of the element based on mouse movement.
   function dragMove(e) {
     e = e || window.event;
     e.preventDefault();
-    // Calculate the new cursor position.
     currentX = initialX - e.clientX;
     currentY = initialY - e.clientY;
     initialX = e.clientX;
     initialY = e.clientY;
-    // Update the element's new position by modifying its `top` and `left` CSS properties.
+    
     var newTop = element.offsetTop - currentY;
     var newLeft = element.offsetLeft - currentX;
     
-    // Prevent window from going above the top bar
     if (newTop < topBarHeight) {
       newTop = topBarHeight;
     }
@@ -128,13 +201,13 @@ function dragElement(element) {
     element.style.left = newLeft + "px";
   }
 
-  // Define the `stopDragging` function to stop tracking mouse movement by removing the event listeners.
   function stopDragging() {
     document.onmouseup = null;
     document.onmousemove = null;
   }
 }
 
+// --- WINDOW MANAGEMENT ---
 if (welcomeScreenClose) {
   welcomeScreenClose.addEventListener("click", function() {
     closeWindow(welcomeScreen);
@@ -193,16 +266,35 @@ function deselectIcon(element) {
   }
 }
 
+// UNIFIED APP OPENER
 function handleIconTap(element) {
+  // 1. Highlight the desktop icon visually
   selectIcon(element);
+  
+  // 2. Read which app this icon is supposed to open
   var appId = element.getAttribute("data-app");
+  
+  // 3. Safety Catch: If it's Coffee Minder but missing the data-app attribute
+  if (!appId && element.id === "coffeeMinderIcon") {
+    appId = "coffeeMinder";
+  }
+
+  // 4. Find the window and open it using your OS engine
   var appWindow = document.querySelector("#" + appId);
   if (appWindow) {
-    openWindow(appWindow);
+    // Special check: ensure display matches what the CSS expects (flex vs block)
+    if(appId === "coffeeMinder") {
+        appWindow.style.display = "block";
+        biggestIndex++;
+        appWindow.style.zIndex = biggestIndex;
+        topBar.style.zIndex = biggestIndex + 1;
+    } else {
+        openWindow(appWindow);
+    }
   }
 }
 
-// Function to add content to the sidebar dynamically
+// --- QUEST LOG / SIDEBAR CONTENT ---
 function addToSidebar(contentType, index) {
   var sidebar = document.querySelector("#" + contentType + "-list");
   if (!sidebar) return;
@@ -213,7 +305,7 @@ function addToSidebar(contentType, index) {
   newDiv.style.cssText = "padding: 12px; border-radius: 8px; cursor: pointer; background-color: #2a2a2a; margin-bottom: 8px; border-left: 3px solid #cc0000;";
   
   newDiv.innerHTML = `
-    <p style="margin: 0; color: #ffd700; font-weight: 700; font-size: 14px;">${item.title}</p>
+    <p style="margin: 0; color: #ffffff; font-weight: 700; font-size: 14px;">${item.title}</p>
     <p style="font-size: 11px; margin: 0; color: #999;">${item.date}</p>
   `;
   
@@ -224,7 +316,6 @@ function addToSidebar(contentType, index) {
   sidebar.appendChild(newDiv);
 }
 
-// Function to display content detail
 function displayContent(contentType, index) {
   var detailPane = document.querySelector("#" + contentType + "-detail");
   if (!detailPane) return;
@@ -232,7 +323,7 @@ function displayContent(contentType, index) {
   var item = logContent[contentType][index];
   
   detailPane.innerHTML = `
-    <h3 style="color: #ffd700; margin-top: 0; margin-bottom: 8px; font-size: 18px;">${item.title}</h3>
+    <h3 style="color: #ffffff; margin-top: 0; margin-bottom: 8px; font-size: 18px;">${item.title}</h3>
     <p style="font-size: 11px; color: #999; margin: 0 0 16px 0;">${item.date}</p>
     <div style="color: #e0e0e0; font-size: 13px; line-height: 1.6;">
       ${item.content}
@@ -240,90 +331,70 @@ function displayContent(contentType, index) {
   `;
 }
 
-// Function to populate a content category
 function populateContentCategory(contentType) {
-  // Clear the sidebar
   var sidebar = document.querySelector("#" + contentType + "-list");
-  if (sidebar) {
-    sidebar.innerHTML = "";
-  }
+  if (sidebar) sidebar.innerHTML = "";
   
-  // Clear the detail pane
   var detailPane = document.querySelector("#" + contentType + "-detail");
-  if (detailPane) {
-    detailPane.innerHTML = "";
-  }
+  if (detailPane) detailPane.innerHTML = "";
   
-  // Add all items to sidebar
   var items = logContent[contentType];
   if (items) {
     for (let i = 0; i < items.length; i++) {
       addToSidebar(contentType, i);
     }
-    // Display the first item by default
     if (items.length > 0) {
       displayContent(contentType, 0);
     }
   }
 }
 
-// Sidebar navigation handling
 var sidebarItems = document.querySelectorAll(".sidebar-item");
 sidebarItems.forEach(function(item) {
   item.addEventListener("click", function() {
     var contentId = this.getAttribute("data-content");
     
-    // Remove active state from all items
     sidebarItems.forEach(function(i) {
       i.style.backgroundColor = "#2a2a2a";
       i.style.color = "#ccc";
     });
     
-    // Set active state on clicked item
     this.style.backgroundColor = "#cc0000";
     this.style.color = "#fff";
     
-    // Hide all content sections
     var contentSections = document.querySelectorAll(".content-section");
     contentSections.forEach(function(section) {
       section.style.display = "none";
     });
     
-    // Show selected content section
     var selectedContent = document.getElementById(contentId + "-content");
     if (selectedContent) {
       selectedContent.style.display = "flex";
-      // Populate the content for this category
       populateContentCategory(contentId);
     }
   });
 });
 
 var abbarItems = document.querySelectorAll(".abbar-item");
-
 abbarItems.forEach(function(item) {
   item.addEventListener("click", function() {
     var contentId = this.getAttribute("data-content");
     
-    // 1. Reset all tabs
     abbarItems.forEach(function(i) {
       i.style.backgroundColor = "#2a2a2a";
       i.style.color = "#ccc";
       i.classList.remove("active");
     });
     
-    // 2. Highlight clicked tab
     this.style.backgroundColor = "#cc0000";
     this.style.color = "#fff";
     this.classList.add("active");
     
-    // 3. Hide all sections
     var abContentSections = document.querySelectorAll(".abcontent-section");
     abContentSections.forEach(function(section) {
       section.style.display = "none";
     });
     
-    // 4. Show the matching section
     var selectedContent = document.getElementById(contentId + "-content");
     if (selectedContent) {
       selectedContent.style.display = "block"; 
@@ -331,46 +402,11 @@ abbarItems.forEach(function(item) {
   });
 });
 
-
-// Initialize content on page load
 window.addEventListener("DOMContentLoaded", function() {
   populateContentCategory("logs");
 });
 
-// --- WINDOW & ICON INITIALIZATION ---
-
-// 1. Wire up all desktop icons to open their respective apps
-var desktopIcons = document.querySelectorAll(".desktop-icon");
-desktopIcons.forEach(function(icon) {
-  icon.addEventListener("click", function() { 
-    handleIconTap(this);
-  });
-});
-
-// 2. Initialize the window behaviors (dragging, tapping to bring to front)
-function initializeWindow(elementName) {
-  var screen = document.querySelector("#" + elementName);
-  
-  if (screen) {
-    // 1. Initialize tapping and dragging behaviors
-    addWindowTapHandling(screen);
-    dragElement(screen);
-    
-    // 2. Dynamically find and initialize the close button
-    var closeButton = document.querySelector("#" + elementName + "close");
-    if (closeButton) {
-      closeButton.addEventListener("click", function() {
-        closeWindow(screen);
-        
-        // Deselect the desktop icon if this specific app is closed
-        if (selectedIcon && selectedIcon.getAttribute("data-app") === elementName) {
-          selectedIcon.classList.remove("selected");
-          selectedIcon = undefined;
-        }
-      });
-    }
-  }
-}
+// --- POMODORO TIMER ENGINE ---
 var timerInterval;
 var timeLeft = 1500; // 25 minutes
 var isPaused = true;
@@ -378,8 +414,10 @@ var isPaused = true;
 function updateDisplay() {
     var minutes = Math.floor(timeLeft / 60);
     var seconds = timeLeft % 60;
-    document.querySelector("#timerDisplay").innerHTML = 
-        (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    var displayElement = document.querySelector("#timerDisplay");
+    if (displayElement) {
+        displayElement.innerHTML = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
 }
 
 function startTimer() {
@@ -409,14 +447,184 @@ function resetTimer() {
     updateDisplay();
 }
 
-// Wire up the new buttons
-document.querySelector("#startTimer").addEventListener("click", startTimer);
-document.querySelector("#pauseTimer").addEventListener("click", pauseTimer);
-document.querySelector("#resetTimer").addEventListener("click", resetTimer);
-// Wire up the button
-document.querySelector("#startTimer").addEventListener("click", startTimer);
-// 3. Initialize the windows that actually exist in your HTML
+// --- COFFEE MINDER ENGINE ---
+var gargoyleState = 0; 
+var coffeeTimer = null;
+var TIME_UNTIL_CRACKED = 2700000;  
+var TIME_UNTIL_CRUMBLED = 3600000; 
+
+function initCoffeeMinder() {
+  var refillBtn = document.querySelector("#refillButton");
+  if (!refillBtn) return;
+
+  refillBtn.addEventListener("click", resetCoffeeMinder);
+  startMinderTimers();
+  updateMinderUI();
+}
+
+function startMinderTimers() {
+  clearTimeout(coffeeTimer);
+
+  coffeeTimer = setTimeout(function() {
+    gargoyleState = 1;
+    updateMinderUI();
+
+    coffeeTimer = setTimeout(function() {
+      gargoyleState = 2;
+      updateMinderUI();
+    }, TIME_UNTIL_CRUMBLED - TIME_UNTIL_CRACKED);
+
+  }, TIME_UNTIL_CRACKED);
+}
+
+function updateMinderUI() {
+  var container = document.querySelector("#gargoyleContainer");
+  var statusText = document.querySelector("#minderStatus");
+  var btn = document.querySelector("#refillButton");
+
+  if (!container || !statusText) return;
+
+  if (gargoyleState === 0) {
+    container.innerHTML = '<img src="gargoyle_happy.png">'; 
+    statusText.innerHTML = "He's alive. All systems are go. Keep the Coffee flowing!";
+    statusText.style.color = "#4cd964"; 
+    btn.innerHTML = "Top Off Elixir";
+
+  } else if (gargoyleState === 1) {
+    container.innerHTML = '<img src="gargoyle_cracked.png">'; 
+    statusText.innerHTML = "Warning: Are you getting tired? The Gargoyle's stone is cracking.";
+    statusText.style.color = "#ffcc00"; 
+    btn.innerHTML = "Pour Dark Elixir";
+
+  } else if (gargoyleState === 2) {
+    container.innerHTML = '<img src="gargoyle_crumbled.png">'; 
+    statusText.innerHTML = "CRITICAL FAIL! The stone has shattered. REFILL COFFEE CUP IMMEDIATELY!";
+    statusText.style.color = "#ff3b30"; 
+    btn.innerHTML = "RESTORE GARGOYLE";
+  }
+}
+
+function resetCoffeeMinder() {
+  gargoyleState = 0;
+  startMinderTimers();
+  updateMinderUI();
+}
+
+// Kickstart Coffee Minder
+initCoffeeMinder();
+
+// Wire up the Coffee Minder specific Close Button
+var coffeeCloseBtn = document.querySelector("#coffeeMinderClose");
+if (coffeeCloseBtn) {
+  coffeeCloseBtn.addEventListener("click", function() {
+    document.querySelector("#coffeeMinder").style.display = "none";
+  });
+}
+// --- MUSIC PLAYER ENGINE ---
+var audio = document.getElementById("musicPlayerAudio");
+var progress = document.getElementById("progress");
+var playPauseBtn = document.getElementById("playPauseBtn");
+var playPauseIcon = document.getElementById("playPauseIcon");
+
+// Update slider visual fill
+function updateSliderBackground() {
+    var value = (progress.value / progress.max) * 100;
+    progress.style.background = `linear-gradient(to right, #cc0000 ${value}%, #ffffff ${value}%)`;
+}
+
+// Sync audio progress
+audio.onloadedmetadata = function() {
+    progress.max = audio.duration;
+};
+
+audio.ontimeupdate = function() {
+    progress.value = audio.currentTime;
+    updateSliderBackground(); // Update the color fill
+};
+
+// Toggle Play/Pause
+playPauseBtn.addEventListener("click", function() {
+    if (audio.paused) {
+        audio.play();
+        playPauseIcon.src = "https://cdn-icons-png.flaticon.com/512/727/727242.png";
+    } else {
+        audio.pause();
+        playPauseIcon.src = "https://cdn-icons-png.flaticon.com/512/727/727245.png";
+    }
+});
+
+// Seek
+progress.oninput = function() {
+    audio.currentTime = progress.value;
+    updateSliderBackground();
+};
+
+// --- FINAL INITIALIZATION WIRING ---
+
+// 1. Desktop Icon Grid Setup
+var desktopIcons = document.querySelectorAll(".desktop-icon");
+desktopIcons.forEach(function(icon) {
+  var iconName = icon.textContent.toLowerCase();
+  var iconId = icon.id.toLowerCase();
+  
+  var isSingleClickApp = iconName.includes("calendar") || 
+                         iconName.includes("welcome") || 
+                         iconId.includes("calendar") || 
+                         iconId.includes("welcome");
+
+  if (isSingleClickApp) {
+    icon.addEventListener("click", function() { 
+      handleIconTap(this);
+    });
+  } else {
+    icon.addEventListener("dblclick", function() { 
+      handleIconTap(this);
+    });
+  }
+});
+
+// 2. Wire up the top bar date to open the calendar
+var topBarDate = document.querySelector("#calendarOpen");
+if (topBarDate) {
+    topBarDate.addEventListener("click", function() {
+        var calendarApp = document.querySelector("#calendar");
+        if (calendarApp) openWindow(calendarApp);
+    });
+}
+
+// 3. Wire up Timer buttons
+var btnStart = document.querySelector("#startTimer");
+var btnPause = document.querySelector("#pauseTimer");
+var btnReset = document.querySelector("#resetTimer");
+if (btnStart) btnStart.addEventListener("click", startTimer);
+if (btnPause) btnPause.addEventListener("click", pauseTimer);
+if (btnReset) btnReset.addEventListener("click", resetTimer);
+
+// 4. Initialize drag/drop and close buttons for standard windows
+function initializeWindow(elementName) {
+  var screen = document.querySelector("#" + elementName);
+  if (screen) {
+    addWindowTapHandling(screen);
+    dragElement(screen);
+    
+    var closeButton = document.querySelector("#" + elementName + "close");
+    if (closeButton) {
+      closeButton.addEventListener("click", function() {
+        closeWindow(screen);
+        if (selectedIcon && selectedIcon.getAttribute("data-app") === elementName) {
+          selectedIcon.classList.remove("selected");
+          selectedIcon = undefined;
+        }
+      });
+    }
+  }
+}
+
+// 5. Run window init loops
 initializeWindow("welcome");
 initializeWindow("sidequesttracker");
 initializeWindow("aboutme");
 initializeWindow("pomodoro");
+initializeWindow("calendar");
+initializeWindow("coffeeMinder");
+initializeWindow("musicPlayer");
